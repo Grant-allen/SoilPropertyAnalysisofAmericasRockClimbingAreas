@@ -1,0 +1,215 @@
+---
+title: "A Soil Property Analysis of America's Rock Climbing Areas"
+author: "Grant Allen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+This project used data from [Mountain Project]("https://www.mountainproject.com/") and [UC Davis' Soil Database]("https://casoilresource.lawr.ucdavis.edu/soil-properties/").
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<br>
+Importing the data and necessary libraries.
+```{r}
+rm(list=ls())
+df <- read.csv("2_cleaned_area_properties.csv")
+library(ggplot2)
+library(RColorBrewer) #Added to utilize the Dark2 color palette (colorblind friendly)
+library(tidyr)
+```
+
+<br>
+<br>
+
+#### Data for analysis questions 1,2, and 3: analysis questions regarding soil properties specific to climbing areas.
+After creating the charts, I save an image so I can make a grid of all charts to be displayed at the end.
+These charts and analysis questions will be discussed in greater depth in the project report
+```{r, results='hide', fig.show='hide', message=FALSE}
+#Creating bins for avail_water_holding_capacity and then plotting in a column chart.
+AWC_breaks <- c(0,7.5,15,22.5,999)
+AWC_labels <- c("Very low", "Low", "Moderate", "High")
+df$AWC <- cut(df$avail_water_holding_capacity, AWC_breaks, AWC_labels)
+ggplot(df, aes(x = factor(AWC), fill= AWC )) +
+  geom_bar() +
+  labs(title = "Climbing areas are found mostly in areas with low available water holding capacity.", x = "Available Water Holding Capacity", y = "Frequency") + scale_fill_brewer(palette = "Dark2") +
+  theme_minimal() 
+ggsave("AWC.png")
+
+#Plotting drainage_class
+ggplot(df, aes(x = factor(drainage_class), fill= drainage_class )) +
+  geom_bar() +
+  labs(title = "Climbing areas are found in areas with well drained soil.", subtitle = "Poorly drained soil condidtions exist throughout the US but are not found at climbing areas.", x = "Drainage Class", y = "Frequency", fill = "Drainage Class") + scale_fill_brewer(palette = "Dark2") +
+  theme_minimal()
+ggsave("drainage.png")
+
+# Creating the rock_fragments bins and chart
+fragment_breaks <- c(0,5,10,20,30,40,999)
+fragment_labels <- c("<5","5-10","10-20","20-30","30-40",">40")
+df$fragments <- cut(df$rock_fragments, fragment_breaks, fragment_labels)
+ggplot(df, aes(x = factor(fragments), fill= fragments )) +
+  geom_bar() +
+  labs(title = "There is no consistent amount of rock fragments in soil amoung climbing areas.", subtitle = "But climbing areas skew towards having more rock fragments.", x = "% of Rock Fragments in Soil by Volume", y = "Frequency", fill = "Rock Fragments") + scale_fill_brewer(palette = "Dark2") + 
+  theme_minimal()
+ggsave("fragments.png")
+
+#Creating the sand bins and chart
+sand_breaks <- c(0,10,20,45,55,70,85,999)
+sand_labels <- c("<10", "10-20", "20-45", "45-55", "55-70", "70-85", ">85")
+df$sand_bins <- cut(df$sand, sand_breaks, sand_labels)
+ggplot(df, aes(x = factor(sand_bins), fill= sand_bins )) +
+  geom_bar() +
+  labs(title = "There is no consistent amount of sand in soil amoung climbing areas.", x = "Weight % of Sand in Soil by Volume", y = "Frequency", fill = "Sand") + scale_fill_brewer(palette = "Dark2") + 
+  theme_minimal()
+ggsave("sand.png")
+
+#Creating the silt bins and chart
+silt_breaks <- c(0,15,25,40,50,60,999)
+silt_labels <- c("<15", "15-25", "25-40", "40-50", "50-60", ">60")
+df$silt_bins <- cut(df$silt, silt_breaks, silt_labels)
+ggplot(df, aes(x = factor(silt_bins), fill= silt_bins )) +
+  geom_bar() +
+  labs(title = "There is no consistent amount of silt in soil amoung climbing areas.", x = "Weight % of Silt in Soil by Volume", y = "Frequency", fill = "Silt") + scale_fill_brewer(palette = "Dark2") + 
+  theme_minimal()
+ggsave("silt.png")
+
+#Creating the clay bins and chart
+clay_breaks <- c(0,10,15,20,25,35,55,999)
+clay_labels <- c("<10", "10-15", "15-20", "20-25", "25-35", "35-55", ">55")
+df$clay_bins <- cut(df$clay, clay_breaks, clay_labels)
+ggplot(df, aes(x = factor(clay_bins), fill= clay_bins)) +
+  geom_bar() +
+  labs(title = "Climbing areas are found in areas with low amounts of clay in soil.", subtitle = "High amounts of clay in soil exist throughout the US but are not found at climbing areas.", x = "Weight % of Clay in Soil by Volume", y = "Frequency", fill = "Clay") + scale_fill_brewer(palette = "Dark2") + 
+  theme_minimal()
+ggsave("clay.png")
+
+#Creating the soil_depth bins and chart
+depth_bins <- c(0,25,50,100,150,999)
+depth_labels <- c("Very shallow", "Shallow", "Moderately deep", "Deep", "Very deep")
+df$depth <- cut(df$soil_depth, depth_bins, depth_labels)
+ggplot(df, aes(x = factor(depth), fill= depth)) +
+  geom_bar() +
+  labs(title = "Climbing areas are mainly found in areas with deep soil", subtitle = "Shallow depth soil exist throughout the US but are not found at climbing areas.", x = "Depth of soil (cm)", y = "Frequency", fill = "Soil Depth") + scale_fill_brewer(palette = "Dark2") + 
+  theme_minimal()
+ggsave("soil_depth.png")
+
+#Creating soil order chart
+ggplot(df, aes(x = factor(soil_order), fill= soil_order )) +
+  geom_bar() +
+  labs(title = "Climbing areas are found in areas with entisol, inceptisols, and mollisols", subtitle = "Note that there are 10 soil orders found in the US but only 3 found at climbing areas", x = "Soil Order", y = "Frequency", fill = "Soil Order") + scale_fill_brewer(palette = "Dark2") +
+  theme_minimal()
+ggsave("soil_order.png")
+```
+<br>
+<br>
+
+##### Soil Properties Chart Collection
+After plotting each soil property and saving the charts I created an image of all 8 charts for easy viewing and comparison. 
+![First png of plots](C:\Users\grant\Desktop\Wrangling\Project\1.png)
+![Second png of plots](C:\Users\grant\Desktop\Wrangling\Project\2.png)
+
+<br>
+
+#### Data for analysis question 4: Does the type of climbing differ between West, Central, and Eastern regions?
+First, I make smaller data frames for climbing areas from each region
+```{r}
+west <- subset(df, state %in% c("California", "Nevada", "Colorado", "Oregon", "Utah"))
+central <- subset(df, state == "Kentucky")
+east <- subset(df, state == "New York")
+```
+
+Next, I aggregate the number of routes for each type of climbing in each region and divide by the total number of climbs in that region to obtain a percentage that is comparable with other regions
+```{r, fig.show='hold'}
+trad <- sum(west$trad_climbs)
+sport <- sum(west$sport_climbs)
+toprope <- sum(west$toprope_climbs)
+boulder <- sum(west$boulder_climbs)
+ice <- sum(west$ice_climbs)
+aid <- sum(west$aid_climbs)
+mixed <- sum(west$mixed_climbs)
+alpine <- sum(west$alpine_climbs)
+west_totals <- data.frame(trad, sport, toprope, boulder, ice, aid, mixed, alpine)
+
+#make the data frame long instead of wide for easier plotting
+west_totals <- gather(west_totals, key="Category", value = "Total")
+
+#make a percentage column
+west_totals$percentage <- west_totals$Total / sum(west_totals$Total) * 100
+
+#make the pie chart
+ggplot(west_totals, aes(x = 1, y = percentage, fill = Category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Trad and sport are the most abundant climbs in the West region", fill = "Type of Climb") +
+  geom_text(data = subset(west_totals, percentage > 20),
+            aes(label = paste0(Category, "\n", round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.75),
+            color = "white",
+            size = 4)
+ggsave("west.png")
+
+
+#same process for central
+trad <- sum(central$trad_climbs)
+sport <- sum(central$sport_climbs)
+toprope <- sum(central$toprope_climbs)
+boulder <- sum(central$boulder_climbs)
+ice <- sum(central$ice_climbs)
+aid <- sum(central$aid_climbs)
+mixed <- sum(central$mixed_climbs)
+alpine <- sum(central$alpine_climbs)
+central_totals <- data.frame(trad, sport, toprope, boulder, ice, aid, mixed, alpine)
+
+central_totals <- gather(central_totals, key="Category", value = "Total")
+
+central_totals$percentage <- central_totals$Total / sum(central_totals$Total) * 100
+
+ggplot(central_totals, aes(x = 1, y = percentage, fill = Category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Sport and trad are the most abundant climbs in the Central region", fill = "Type of Climb") +
+  geom_text(data = subset(central_totals, percentage > 20),
+            aes(label = paste0(Category, "\n", round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.75),
+            color = "white",
+            size = 4)
+ggsave("central.png")
+
+
+#same process for east
+trad <- sum(east$trad_climbs)
+sport <- sum(east$sport_climbs)
+toprope <- sum(east$toprope_climbs)
+boulder <- sum(east$boulder_climbs)
+ice <- sum(east$ice_climbs)
+aid <- sum(east$aid_climbs)
+mixed <- sum(east$mixed_climbs)
+alpine <- sum(east$alpine_climbs)
+east_totals <- data.frame(trad, sport, toprope, boulder, ice, aid, mixed, alpine)
+
+east_totals <- gather(east_totals, key="Category", value = "Total")
+
+east_totals$percentage <- east_totals$Total / sum(east_totals$Total) * 100
+
+ggplot(east_totals, aes(x = 1, y = percentage, fill = Category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Trad, toprope, and boulder are the most common in the East region", fill = "Type of Climbing") +
+  geom_text(data = subset(east_totals, percentage > 15),
+            aes(label = paste0(Category, "\n", round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.75),
+            color = "white",
+            size = 4)
+ggsave("east.png")
+```
+
+
+
